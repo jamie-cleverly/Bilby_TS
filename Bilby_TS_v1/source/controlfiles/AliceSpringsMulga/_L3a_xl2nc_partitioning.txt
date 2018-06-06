@@ -1,0 +1,110 @@
+[General]
+    InLevel = 'L3'
+    OutLevel = 'L3'
+    Platform = Mac    # comment out if PC excel
+    netCDFv3 = False
+
+[Files]
+    [[L3]]
+        xlFilePath = ../../AliceSpringsMulga/level3_intermediates/
+        xlFileName = ASM_EC_2018_L4_MetFilled0.xls
+        xlHeaderRow  = 10
+        xl1stDataRow = 11
+        ncFilePath = ../ncData/ASM/
+        ncFileName = ASM_EC_2018_L4pin.nc
+
+[Global]
+    study = "Carbon Partitioning"
+    contact  = "james.cleverly@uts.edu.au"
+    citation = "Cleverly, J. (2011), Alice Springs Mulga OzFlux site, OzFlux: Australian and New Zealand Flux Research and Monitoring Network, hdl: 102.100.100/8697."
+    license_type = "TERN-BY-SA_NC"
+    license_url = "http://www.tern.org.au/datalicence/TERN-BY-SA-NC/1.0"
+    canopy_height = "6.5m"
+    comment = "CF convention version"
+    comment1 = "Re-analysis 31 July 2013:  Cross-sensor sigma-v re-defined to crosswind sigma-v.  Correction to crosswind footprint distribution and rotation of covariances contributing to momentum transfer."
+    comment2 = "27 Aug 2013:  Penman-Monteith inversion variables consistent with reference3"
+    comment3 = "Re-analysis 26 Sep 2013: Units error in WPL corrected.  Error resulted in < 1% bias error in Fc and < 0.5% in Fe"
+    data_url = "http://ozflux.its.monash.edu.au/"
+    end_datetime = "2013-9-30 23:30"
+    history = ""
+    institution = "University of Technology, Sydney"
+    latitude = -22.283
+    longitude = 133.249
+    elevation = "600m"
+    metadata_url = "http://www.ozflux.org.au/monitoringsites/alicesprings/index.html"
+    ozflux_url = "http://ozflux.org.au/"
+    references = "1: Eamus et al. 2013; 2,3: Cleverly et al. 2013; 4: Ma et al. 2013"
+    reference1 = "Eamus, D., J. Cleverly, N. Boulain, N. Grant, R. Faux, and R. Villalobos-Vega (2013), Carbon and water fluxes in an arid-zone Acacia savanna woodland: An analyses of seasonal patterns and responses to rainfall events, Agric. For. Meteor., 1-14, doi: 10.1016/j.agrformet.2013.04.020."
+    reference2 = "Cleverly, J., N. Boulain, R. Villalobos-Vega, N. Grant, R. Faux, C. Wood, P. G. Cook, Q. Yu, A. Leigh, and D. Eamus (2013), Dynamics of component carbon fluxes in a semi-arid Acacia woodland, central Australia, J. Geophys. Res. Biogeosci., 118, doi: 10.1002/jgrg.20101."
+    reference3 = "Cleverly, J., C. Chen, N. Boulain, R. Villalobos-Vega, R. Faux, N. Grant, Q. Yu, and D. Eamus (2013), Aerodynamic resistance and Penman-Monteith evapotranspiration over a seasonally two-layered canopy in semi-arid central Australia, J. Hydrometeor., doi: 10.1175/JHM-D-13-080.1."
+    reference4 = "Ma, X., A. Huete, Q. Yu, N. Restrepo Coupe, K. Davies, M. Broich, P. Ratana, J. Beringer, L. Hutley, J. Cleverly, N. Boulain, and D. Eamus (2013), Spatial patterns and temporal dynamics in savanna vegetation phenology across the North Australian Tropical Transect, Remote Sens. Environ., 139, 97-115, doi: 10.1016/j.rse.2013.07.030."
+    site_name = "AliceSpringsMulga"
+    site = "Alice Springs Mulga, Northern Territory, Australia"
+    soil_type = "red kandosol, sandy loam"
+    source = "13.7m flux tower plus array of soil sensors"
+    start_datetime = "2013-1-01 00:00"
+    title = "Flux tower data set from the Alice Springs Mulga site for the third quarter of calendar year 2018"
+    time_step = 30
+    vegetation1 = "Mulga canopy: Acacia aneura varieties aneura, intermedia and tenuis"
+    vegetation2 = "C3 understorey forbs and shrubs:  Psydrax latifolia, Eremophila gilesii, E. latrobei ssp glabra (Crimson turkey bush), Sida and Abutilon spp, and Solanum ellipticum (Potato bush)"
+    vegetation3 = "C3 understorey grass:  perennial Thyridolepsis mitchelliana (Window mulga-grass)"
+    vegetation4 = "C4 understorey grasses:  perennial Eragrostis eriopoda (Naked woolybutt) and annual Eriachne pulchella ssp pulchella (Pretty wanderrie)"
+
+[Variables]
+    [[xlDateTime]]
+        [[[xl]]]
+            sheet    = Data
+            name     = TIMESTAMP
+        [[[Attr]]]
+            ancillary_variables = ""
+            long_name = "Date/time in Excel format"
+            units    = ""
+            standard_name = "not defined"
+    [[Fc]]
+        [[[xl]]]
+            sheet    = Data
+            name     = Fc_co2
+        [[[Attr]]]
+            ancillary_variables = "Fc_wpl QC flag"
+            long_name = "Flux of carbon, Raw uncorrected, CO2 flux, rotated to natural wind coordinates and frequency response corrected, WPL corrected Fc"
+            units    = "mg/(m2 s)"
+            standard_name = "surface_upward_mass_flux_of_carbon_dioxide_expressed_as_carbon_due_to_emission_from_natural_sources"
+    [[Fsd]]
+        [[[xl]]]
+            sheet    = Data
+            name     = Fsd
+        [[[Attr]]]
+            ancillary_variables = "Fsd QC flag"
+            instrument = "Kipp and Zonen CNR1"
+            long_name = "Down-welling short wave"
+            standard_name = "surface_downwelling_shortwave_flux_in_air"
+            units = "W/m2"
+    [[Ts]]
+        [[[xl]]]
+            sheet    = Data
+            name     = Ts
+        [[[Attr]]]
+            long_name = "Element-wise average of series Ts_bs, Ts_ms, Ts_mu"
+            units    = "C"
+            ancillary_variables = "Ts QC flag"
+            standard_name = "soil_temperature"
+    [[Sws]]
+        [[[xl]]]
+            sheet    = Data
+            name     = Sws
+        [[[Attr]]]
+            long_name = "Element-wise average of series Sws_bs, Sws_ms, Sws_mu"
+            units    = "frac"
+            ancillary_variables = "Sws QC flag"
+            standard_name = "soil_moisture_content"
+    [[Ta]]
+        [[[xl]]]
+            sheet    = Data
+            name     = Ta
+        [[[Attr]]]
+            long_name = "Air temperature (HMP) at 11.67m"
+            units    = "C"
+            ancillary_variables = "Ta_HMP QC flag"
+            standard_name = "air_temperature"
+
+

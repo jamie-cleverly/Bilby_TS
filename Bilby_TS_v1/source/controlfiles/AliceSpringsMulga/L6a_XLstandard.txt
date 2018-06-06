@@ -1,0 +1,13 @@
+[General]
+    InputLevel = L6_CPartitioned
+    OutputLevel = L6_CPartitioned
+
+[Files]
+    [[L6_CPartitioned]]
+        in_file_path = ../AliceSpringsMulga/level6/
+        in_filename = ASM_EC_2018_L6_CPartitioned.nc
+        out_file_path = ../AliceSpringsMulga/level6/
+        out_filename = ASM_EC_2018_L6_CPartitioned.xls
+
+[Output]
+    DefaultXl = False

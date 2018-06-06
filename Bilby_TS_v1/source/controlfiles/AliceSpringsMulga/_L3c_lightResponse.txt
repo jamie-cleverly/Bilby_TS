@@ -1,0 +1,19 @@
+[General]
+    Platform = Mac    # Mac or PC
+    InputLevel = L6
+    OutputLevel = Partitioning
+    netCDFv3 = False
+
+[Files]
+    [[L6]]
+        ncFilePath = ../ncData/ASM/
+        ncFileName = ASM_EC_2018_L4part.nc
+    [[Partitioning]]
+        xlFilePath = ../../AliceSpringsMulga/level3_intermediates/Partitioning/
+        xlFileName = ASM_EC_2018_DayFc.xls
+
+[Output]
+    Partitioning = "['Fsd', 'Ts', 'Fc', 'Fc_Ts6to11', 'Fc_Ts11to16', 'Fc_Ts16to21', 'Fc_Ts21to26', 'Fc_Ts26to31', 'Fc_Ts31to36', 'Fc_Ts36to41', 'Fc_Ts41to46', 'Fc_Ts46to51', 'Fc_Ts51to56', 'Fc_Ts56to61', 'Fc_Ts46to59']"
+    Format = Subset   # Full (default) or Subset
+    DefaultXl = False
+

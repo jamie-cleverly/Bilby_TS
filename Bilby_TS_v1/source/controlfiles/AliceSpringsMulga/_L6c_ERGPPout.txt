@@ -1,0 +1,19 @@
+[General]
+    Platform = Mac    # Mac or PC
+    InputLevel = L6
+    OutputLevel = Partitioning
+    netCDFv3 = False
+
+[Files]
+    [[L6]]
+        ncFilePath = ../ncData/ASM/
+        ncFileName = ASM_EC_2018_L6part.nc
+    [[Partitioning]]
+        xlFilePath = ../../AliceSpringsMulga/level3_intermediates/Partitioning/
+        xlFileName = ASM_EC_2018_L6_CE_GPP.xls
+
+[Output]
+    Partitioning = "['GPP', 'CE', 'ER_night', 'ER_dark', 'CE_day', 'CE_NEEmax', 'NEE_day']"
+    Format = Subset   # Full (default) or Subset
+    DefaultXl = False
+

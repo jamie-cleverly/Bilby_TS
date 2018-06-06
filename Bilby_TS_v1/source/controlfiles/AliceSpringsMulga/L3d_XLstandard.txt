@@ -1,0 +1,14 @@
+[General]
+    InputLevel = L3_Corrected
+    OutputLevel = L3_Corrected
+
+[Files]
+    [[L3_Corrected]]
+        in_file_path = ../AliceSpringsMulga/level3/
+        in_filename = ASM_EC_2018_L3_Corrected.nc
+        out_file_path = ../AliceSpringsMulga/level3/
+        out_filename = ASM_EC_2018_L3_Corrected.xls
+
+[Output]
+    DefaultXl = False
+
