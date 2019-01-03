@@ -299,7 +299,7 @@ def AverageSeriesByElementsI(cf,ds,Av_out):
         tmp_flag = ds.series[srclist[0]]['Flag'].copy()
         tmp_attr = ds.series[srclist[0]]['Attr'].copy()
         Av_data = numpy.ma.masked_where(tmp_data==numpy.float64(c.missing_value),tmp_data)
-        Mn_flag = tmp_flag
+        Mx_flag = tmp_flag
         SeriesNameString = srclist[0]
     else:
         tmp_data = ds.series[srclist[0]]['Data'].copy()
@@ -766,6 +766,47 @@ def CalculateSpecificHumidityProfile(cf,ds):
     
     log.info(' q and T profile computed')
     return
+
+def CalculateWUEfromSimilarity(cf,ds):
+    Fsd,f,a = qcutils.GetSeriesasMA(ds,'Fsd')
+    Ta,f,a = qcutils.GetSeriesasMA(ds,'Ta')
+    Fe,f,a = qcutils.GetSeriesasMA(ds,'Fe')
+    Fc,WUEflag,a = qcutils.GetSeriesasMA(ds,'Fc')
+    q,f,a = qcutils.GetSeriesasMA(ds,'Ah')
+    esat,f,a = qcutils.GetSeriesasMA(ds,'esat')
+    Cc,f,a = qcutils.GetSeriesasMA(ds,'Cc')
+    Lv,f,a = qcutils.GetSeriesasMA(ds,'Lv')
+    ustar,f,a = qcutils.GetSeriesasMA(ds,'ustar')
+    zeta,f,a = qcutils.GetSeriesasMA(ds,'zeta')
+    index = numpy.ma.where(Fsd < 10)[0]
+    if qcutils.cfkeycheck(cf,Base='Massman',ThisOne='zmd'):
+        zmd = ast.literal_eval(cf['Massman']['zmd'])
+    else:
+        log.error('  zmd not defined in cf section Massman')
+        return
+    
+    if qcutils.cfkeycheck(cf,Base='Massman',ThisOne='z0'):
+        z0 = ast.literal_eval(cf['Massman']['z0'])
+    else:
+        log.error('  z0 not defined in cf section Massman')
+        return
+    
+    z0v = z0*0.1
+    zeta[index] = numpy.float64(c.missing_value)
+    stable = numpy.ma.where(zeta > 1/16)[0]
+    zeta[stable] = numpy.float64(c.missing_value)
+    psyv = 2*numpy.log((1+numpy.sqrt(1-(16*zeta)))/2)
+    qs = q + ((Fe/Lv)/(0.41*ustar))*(numpy.log(zmd/z0v)-psyv)
+    cs = Cc + (Fc/(0.41*ustar))*(numpy.log(zmd/z0v)-psyv)
+    ci = 0.33 * cs
+    qi = mf.absolutehumidity(Ta,esat)
+    WUE = 0.7*(cs-ci)/(qs-qi)
+    WUE[index] = numpy.float64(c.missing_value)
+    WUE[stable] = numpy.float64(c.missing_value)
+    WUEflag[index] = numpy.int32(8)
+    WUEflag[stable] = numpy.int32(22)
+    attr = qcutils.MakeAttributeDictionary(long_name='Water-use efficiency from flux-gradient similarity',units='mg/g')
+    qcutils.CreateSeries(ds,'WUE',WUE,Flag=WUEflag,Attr=attr)
 
 def ComputeClimatology(cf,ds,OList):
     if qcutils.cfkeycheck(cf,Base='Climatology',ThisOne='EF'):
@@ -2493,6 +2534,16 @@ def do_functions(cf,ds):
         Uz_Sd = numpy.ma.sqrt(UzUz)
         attr = qcutils.MakeAttributeDictionary(long_name='Vertical velocity component from CSAT, standard deviation',units='m/s')
         qcutils.CreateSeries(ds,'Uz_Sd',Uz_Sd,Flag=flag,Attr=attr)
+    if 'Tv_Sd' in ds.series.keys() and 'TvTv' not in ds.series.keys():
+        Tv_Sd,flag,attr = qcutils.GetSeriesasMA(ds,'Tv_Sd')
+        TvTv = Tv_Sd*Tv_Sd
+        attr = qcutils.MakeAttributeDictionary(long_name='Virtual air temperature from CSAT, variance',units='C2')
+        qcutils.CreateSeries(ds,'TvTv',TvTv,Flag=flag,Attr=attr)
+    if 'TvTv' in ds.series.keys() and 'Tv_Sd' not in ds.series.keys():
+        TvTv,flag,attr = qcutils.GetSeriesasMA(ds,'TvTv')
+        Tv_Sd = numpy.ma.sqrt(TvTv)
+        attr = qcutils.MakeAttributeDictionary(long_name='Virtual air temperature from CSAT, standard deviation',units='C')
+        qcutils.CreateSeries(ds,'Tv_Sd',Tv_Sd,Flag=flag,Attr=attr)
 
 def do_PenmanMonteith(cf,ds):
     if qcutils.cfkeycheck(cf,Base='PenmanMonteith',ThisOne='Cdmethod'):
@@ -3256,6 +3307,23 @@ def get_averages(Data):
             Av = c.missing_value
     return Num, Av
 
+def get_averages_WUE(Data):
+    """
+        Get daily averages for WUE with missing observations.
+        Values returned are sample size (Num) and average (Av)
+        
+        Usage qcts.get_averages_WUE(Data)
+        Data: 1-day dataset
+        """
+    li = numpy.ma.where(abs(Data-numpy.float64(c.missing_value))>c.eps)
+    Num = numpy.size(li)
+    if Num == 0:
+        Av = c.missing_value
+    else:
+        Av = numpy.ma.mean(Data[li])
+    
+    return Num, Av
+
 def get_canopyresistance(cf,ds,Uavg,uindex,PMin,Level,critFsd,critFe):
     if qcutils.cfkeycheck(cf,Base='PenmanMonteith',ThisOne='zm'):
         zm = numpy.float64(cf['PenmanMonteith']['zm'])
@@ -3425,8 +3493,29 @@ def get_minmax(Data):
             Min = numpy.ma.min(Data[li])
             Max = numpy.ma.max(Data[li])
         else:
-            Min = c.missing_value
-            Max = c.missing_value
+            Min = numpy.ma.min(Data[li])
+            Max = numpy.ma.max(Data[li])
+            #Min = c.missing_value
+            #Max = c.missing_value
+    return Num, Min, Max
+
+def get_minmax_WUE(Data):
+    """
+        Get daily minima and maxima for WUE with missing obs.
+        Values returned are sample size (Num), minimum (Min) and maximum (Max)
+        
+        Usage qcts.get_minmax(Data)
+        Data: 1-day dataset
+        """
+    li = numpy.ma.where(abs(Data-numpy.float64(c.missing_value))>c.eps)
+    Num = numpy.size(li)
+    if Num == 0:
+        Min = c.missing_value
+        Max = c.missing_value
+    else:
+        Min = numpy.ma.min(Data[li])
+        Max = numpy.ma.max(Data[li])
+    
     return Num, Min, Max
 
 def get_nightsums(Data):
@@ -4701,12 +4790,21 @@ def write_sums(cf,ds,ThisOne,xlCol,xlSheet,DoSum='False',DoMinMax='False',DoMean
                 if DoSum == 'True':
                     Num,Sum = get_sums(data[di])
                 if DoMinMax == 'True':
-                    Num,Min,Max = get_minmax(data[di])
+                    if ThisOne == 'WUE':
+                        Num,Min,Max = get_minmax_WUE(data[di])
+                    else:
+                        Num,Min,Max = get_minmax(data[di])
                 if DoMean == 'True':
                     if DoMinMax == 'True':
-                        Num2,Av = get_averages(data[di])
+                        if ThisOne == 'WUE':
+                            Num2,Av = get_averages_WUE(data[di])
+                        else:
+                            Num2,Av = get_averages(data[di])
                     else:
-                        Num,Av = get_averages(data[di])
+                        if ThisOne == 'WUE':
+                            Num,Av = get_averages_WUE(data[di])
+                        else:
+                            Num,Av = get_averages(data[di])
                 if DoSubSum == 'True':
                     PosNum,NegNum,SumPos,SumNeg = get_subsums(data[di])
                 xlCol = 2

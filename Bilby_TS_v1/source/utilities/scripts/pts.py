@@ -406,7 +406,13 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     NEE_day_flag = numpy.zeros(nRecs,numpy.int32) + Fc_flag
     a_dark_low = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     b_dark_low = numpy.zeros(nRecs,numpy.float64) + c.missing_value
-    t_opt_dark = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    t_opt1_dark = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    a_dark_mid1 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    b_dark_mid1 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    t_min_dark = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    a_dark_mid2 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    b_dark_mid2 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    t_opt2_dark = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     a_dark_high = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     b_dark_high = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     a_max_low = numpy.zeros(nRecs,numpy.float64) + c.missing_value
@@ -420,6 +426,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     a_max_mid2 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     b_max_mid2 = numpy.zeros(nRecs,numpy.float64) + c.missing_value
     t_opt2_max = numpy.zeros(nRecs,numpy.float64) + c.missing_value
+    double_peak0 = numpy.zeros(nRecs,numpy.int32)
     double_peak = numpy.zeros(nRecs,numpy.int32)
     
     # calculate ecosystem respiration in umol/(m2 s) modeled from light response curve (Fc-Fsd)
@@ -450,11 +457,20 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     year2017i_index = numpy.where((ds.series['Year']['Data'] == 2017) & (ds.series['Month']['Data'] == 9))[0]
     year2017j_index = numpy.where((ds.series['Year']['Data'] == 2017) & (ds.series['Month']['Data'] == 10))[0]
     year2017k_index = numpy.where((ds.series['Year']['Data'] == 2017) & (ds.series['Month']['Data'] > 10))[0]
+    year2018a_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] < 4))[0]
+    year2018b_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] == 4))[0]
+    year2018c_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] > 4) & (ds.series['Month']['Data'] < 7))[0]
+    year2018d_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] > 6) & (ds.series['Month']['Data'] < 9))[0]
+    year2018e_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] == 9))[0]
+    year2018f_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] == 10))[0]
+    year2018g_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] == 11))[0]
+    year2018h_index = numpy.where((ds.series['Year']['Data'] == 2018) & (ds.series['Month']['Data'] == 12))[0]
+
     
     if (len(year2010_index)>0):
         a_dark_low[year2010_index] = 2.733632E-1
         b_dark_low[year2010_index] = 7.473461E-2
-        t_opt_dark[year2010_index] = 27.8
+        t_opt1_dark[year2010_index] = 27.8
         a_dark_high[year2010_index] = 7.608090E+0
         b_dark_high[year2010_index] = -4.489662E-2
         a_max_low[year2010_index] = 1.024196E+0
@@ -466,7 +482,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2011a_index)>0):
         a_dark_low[year2011a_index] = 2.733632E-1
         b_dark_low[year2011a_index] = 7.473461E-2
-        t_opt_dark[year2011a_index] = 27.8
+        t_opt1_dark[year2011a_index] = 27.8
         a_dark_high[year2011a_index] = 7.608090E+0
         b_dark_high[year2011a_index] = -4.489662E-2
         a_max_low[year2011a_index] = 1.024196E+0
@@ -478,7 +494,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2011b_index)>0):
         a_dark_low[year2011b_index] = 2.034582E-1
         b_dark_low[year2011b_index] = 5.699653E-2
-        t_opt_dark[year2011b_index] = 28.25
+        t_opt1_dark[year2011b_index] = 28.25
         a_dark_high[year2011b_index] = 4.185254E+0
         b_dark_high[year2011b_index] = -5.004414E-2
         double_peak[year2011b_index] = 1
@@ -497,7 +513,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2012a_index)>0):
         a_dark_low[year2012a_index] = 2.034582E-1
         b_dark_low[year2012a_index] = 5.699653E-2
-        t_opt_dark[year2012a_index] = 28.25
+        t_opt1_dark[year2012a_index] = 28.25
         a_dark_high[year2012a_index] = 4.185254E+0
         b_dark_high[year2012a_index] = -5.004414E-2
         double_peak[year2011b_index] = 1
@@ -516,7 +532,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2012b_index)>0):
         a_dark_low[year2012b_index] = 1.649040E-1
         b_dark_low[year2012b_index] = 4.906209E-2
-        t_opt_dark[year2012b_index] = 27.9
+        t_opt1_dark[year2012b_index] = 27.9
         a_dark_high[year2012b_index] = 2.911544E+0
         b_dark_high[year2012b_index] = -5.410930E-2
         a_max_low[year2012b_index] = 1.024196E+0
@@ -528,7 +544,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2013a_index)>0):
         a_dark_low[year2013a_index] = 1.649040E-1
         b_dark_low[year2013a_index] = 4.906209E-2
-        t_opt_dark[year2013a_index] = 27.9
+        t_opt1_dark[year2013a_index] = 27.9
         a_dark_high[year2013a_index] = 2.911544E+0
         b_dark_high[year2013a_index] = -5.410930E-2
         a_max_low[year2013a_index] = 1.024196E+0
@@ -540,7 +556,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2013b_index)>0):
         a_dark_low[year2013b_index] = 2.034582E-1
         b_dark_low[year2013b_index] = 5.699653E-2
-        t_opt_dark[year2013b_index] = 28.25
+        t_opt1_dark[year2013b_index] = 28.25
         a_dark_high[year2013b_index] = 4.185254E+0
         b_dark_high[year2013b_index] = -5.004414E-2
         a_max_low[year2013b_index] = 7.075630E-2
@@ -552,7 +568,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2014_index)>0):
         a_dark_low[year2014_index] = 2.034582E-1
         b_dark_low[year2014_index] = 5.699653E-2
-        t_opt_dark[year2014_index] = 28.25
+        t_opt1_dark[year2014_index] = 28.25
         a_dark_high[year2014_index] = 4.185254E+0
         b_dark_high[year2014_index] = -5.004414E-2
         a_max_low[year2014_index] = 7.075630E-2
@@ -564,7 +580,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2015a_index)>0):
         a_dark_low[year2015a_index] = 2.034582E-1
         b_dark_low[year2015a_index] = 5.699653E-2
-        t_opt_dark[year2015a_index] = 28.25
+        t_opt1_dark[year2015a_index] = 28.25
         a_dark_high[year2015a_index] = 4.185254E+0
         b_dark_high[year2015a_index] = -5.004414E-2
         a_max_low[year2015a_index] = 7.075630E-2
@@ -576,7 +592,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2015b_index)>0):
         a_dark_low[year2015b_index] = 2.034582E-1
         b_dark_low[year2015b_index] = 5.699653E-2
-        t_opt_dark[year2015b_index] = 28.25
+        t_opt1_dark[year2015b_index] = 28.25
         a_dark_high[year2015b_index] = 4.185254E+0
         b_dark_high[year2015b_index] = -5.004414E-2
         a_max_low[year2015b_index] = 1.024196E+0
@@ -588,7 +604,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2016_index)>0):
         a_dark_low[year2016_index] = 2.034582E-1
         b_dark_low[year2016_index] = 5.699653E-2
-        t_opt_dark[year2016_index] = 28.25
+        t_opt1_dark[year2016_index] = 28.25
         a_dark_high[year2016_index] = 4.185254E+0
         b_dark_high[year2016_index] = -5.004414E-2
         a_max_low[year2016_index] = 1.024196E+0
@@ -600,7 +616,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017a_index)>0):
         a_dark_low[year2017a_index] = 5.58824E+0
         b_dark_low[year2017a_index] = -2.717019E-2
-        t_opt_dark[year2017a_index] = 55
+        t_opt1_dark[year2017a_index] = 55
         a_dark_high[year2017a_index] = 5.58824E+0
         b_dark_high[year2017a_index] = -2.717019E-2
         a_max_low[year2017a_index] = 1.024196E+0
@@ -612,7 +628,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017b_index)>0):
         a_dark_low[year2017b_index] = 1.626676E+1
         b_dark_low[year2017b_index] = -6.791466E-2
-        t_opt_dark[year2017b_index] = 55
+        t_opt1_dark[year2017b_index] = 55
         a_dark_high[year2017b_index] = 1.626676E+1
         b_dark_high[year2017b_index] = -6.791466E-2
         a_max_low[year2017b_index] = 1.024196E+0
@@ -624,7 +640,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017c_index)>0):
         a_dark_low[year2017c_index] = 3.324386E+1
         b_dark_low[year2017c_index] = -9.605714E-2
-        t_opt_dark[year2017c_index] = 55
+        t_opt1_dark[year2017c_index] = 55
         a_dark_high[year2017c_index] = 3.324386E+1
         b_dark_high[year2017c_index] = -9.605714E-2
         a_max_low[year2017c_index] = 1.024196E+0
@@ -636,7 +652,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017d_index)>0):
         a_dark_low[year2017d_index] = 4.941531E+0
         b_dark_low[year2017d_index] = -5.679562E-2
-        t_opt_dark[year2017d_index] = 55
+        t_opt1_dark[year2017d_index] = 55
         a_dark_high[year2017d_index] = 4.941531E+0
         b_dark_high[year2017d_index] = -5.679562E-2
         a_max_low[year2017d_index] = 1.024196E+0
@@ -648,7 +664,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017e_index)>0):
         a_dark_low[year2017e_index] = 1.264069E+0
         b_dark_low[year2017e_index] = 6.704564E-3
-        t_opt_dark[year2017e_index] = 23.7
+        t_opt1_dark[year2017e_index] = 23.7
         a_dark_high[year2017e_index] = 8.304850E+1
         b_dark_high[year2017e_index] = -1.698815E-1
         a_max_low[year2017e_index] = 1.024196E+0
@@ -660,7 +676,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017f_index)>0):
         a_dark_low[year2017f_index] = 4.902996E+0
         b_dark_low[year2017f_index] = -1.534015E-1
-        t_opt_dark[year2017f_index] = 55
+        t_opt1_dark[year2017f_index] = 55
         a_dark_high[year2017f_index] = 4.902996E+0
         b_dark_high[year2017f_index] = -1.534015E-1
         a_max_low[year2017f_index] = 1.024196E+0
@@ -672,7 +688,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017g_index)>0):
         a_dark_low[year2017g_index] = 1.018235E+1
         b_dark_low[year2017g_index] = -2.037039E-1
-        t_opt_dark[year2017g_index] = 55
+        t_opt1_dark[year2017g_index] = 55
         a_dark_high[year2017g_index] = 1.018235E+1
         b_dark_high[year2017g_index] = -2.037039E-1
         a_max_low[year2017g_index] = 1.024196E+0
@@ -684,7 +700,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017h_index)>0):
         a_dark_low[year2017h_index] = 8.596158E+0
         b_dark_low[year2017h_index] = -1.665504E-1
-        t_opt_dark[year2017h_index] = 55
+        t_opt1_dark[year2017h_index] = 55
         a_dark_high[year2017h_index] = 8.596158E+0
         b_dark_high[year2017h_index] = -1.665504E-1
         a_max_low[year2017h_index] = 1.024196E+0
@@ -696,7 +712,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017i_index)>0):
         a_dark_low[year2017i_index] = 5.403240E+0
         b_dark_low[year2017i_index] = -1.277043E-1
-        t_opt_dark[year2017i_index] = 55
+        t_opt1_dark[year2017i_index] = 55
         a_dark_high[year2017i_index] = 5.403240E+0
         b_dark_high[year2017i_index] = -1.277043E-1
         a_max_low[year2017i_index] = 1.024196E+0
@@ -708,7 +724,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017j_index)>0):
         a_dark_low[year2017j_index] = 2.438706E+0
         b_dark_low[year2017j_index] = -8.205721E-2
-        t_opt_dark[year2017j_index] = 55
+        t_opt1_dark[year2017j_index] = 55
         a_dark_high[year2017j_index] = 2.438706E+0
         b_dark_high[year2017j_index] = -8.205721E-2
         a_max_low[year2017j_index] = 1.024196E+0
@@ -720,7 +736,7 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(year2017k_index)>0):
         a_dark_low[year2017k_index] = 5.631782E-1
         b_dark_low[year2017k_index] = 4.417722E-2
-        t_opt_dark[year2017k_index] = 23.73
+        t_opt1_dark[year2017k_index] = 23.73
         a_dark_high[year2017k_index] = 6.153446
         b_dark_high[year2017k_index] = -5.732355E-2
         a_max_low[year2017k_index] = 1.024196E+0
@@ -729,12 +745,140 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
         a_max_high[year2017k_index] = 2.288693E+7
         b_max_high[year2017k_index] = -3.437756E-1
     
-    ER_dark_Ts_low_index = numpy.where((Ts < t_opt_dark) & (Fsd > 1))[0]
-    ER_dark_Ts_high_index = numpy.where((Ts > t_opt_dark) & (Fsd > 1))[0]
+    if (len(year2018a_index)>0):
+        a_dark_low[year2018a_index] = 3.129646E+0
+        b_dark_low[year2018a_index] = -4.404027E-2
+        t_opt1_dark[year2018a_index] = 55
+        a_dark_high[year2018a_index] = 3.129646E+0
+        b_dark_high[year2018a_index] = -4.404027E-2
+        a_max_low[year2018a_index] = 5.493866E+0
+        b_max_low[year2018a_index] = -3.558012E-2
+        t_opt1_max[year2018a_index] = 55
+        a_max_high[year2018a_index] = 5.493866E+0
+        b_max_high[year2018a_index] = -3.558012E-2
+    
+    if (len(year2018b_index)>0):
+        a_dark_low[year2018b_index] = 1.649040E-1
+        b_dark_low[year2018b_index] = 4.906209E-2
+        t_opt1_dark[year2018b_index] = 27.9
+        a_dark_high[year2018b_index] = 2.911544E+0
+        b_dark_high[year2018b_index] = -5.410930E-2
+        double_peak[year2018b_index] = 1
+        a_max_low[year2018b_index] = 1.224043E-1
+        b_max_low[year2018b_index] = 1.229970E-1
+        t_opt1_max[year2018b_index] = 18.85
+        a_max_mid1[year2018b_index] = 6.245842E+0
+        b_max_mid1[year2018b_index] = -8.748719E-2
+        t_min_max[year2018b_index] = 28.67
+        a_max_mid2[year2018b_index] = 2.369360E-2
+        b_max_mid2[year2018b_index] = 1.082945E-1
+        t_opt2_max[year2018b_index] = 33.78
+        a_max_high[year2018b_index] = 1.374934E+0
+        b_max_high[year2018b_index] = -1.149678E-2
+    
+    if (len(year2018c_index)>0):
+        a_dark_low[year2018c_index] = 4.642939E-1
+        b_dark_low[year2018c_index] = -3.329935E-2
+        t_opt1_dark[year2018c_index] = 55
+        a_dark_high[year2018c_index] = 4.642939E-1
+        b_dark_high[year2018c_index] = -3.329935E-2
+        a_max_low[year2018c_index] = 1.255770E+0
+        b_max_low[year2018c_index] = -1.70105E-2
+        t_opt1_max[year2018c_index] = 55
+        a_max_high[year2018c_index] = 1.255770E+0
+        b_max_high[year2018c_index] = -1.70105E-2
+    
+    if (len(year2018d_index)>0):
+        a_dark_low[year2018d_index] = 3.387101E-1
+        b_dark_low[year2018d_index] = -2.931304E-3
+        t_opt1_dark[year2018d_index] = 13.95
+        a_dark_high[year2018d_index] = 1.467532
+        b_dark_high[year2018d_index] = -1.020661E-1
+        a_max_low[year2018d_index] = 6.655837E-1
+        b_max_low[year2018d_index] = -3.724953E-2
+        t_opt1_max[year2018d_index] = 55
+        a_max_high[year2018d_index] = 6.655837E-1
+        b_max_high[year2018d_index] = -3.724953E-2
+    
+    if (len(year2018e_index)>0):
+        a_dark_low[year2018e_index] = 8.377861E-1
+        b_dark_low[year2018e_index] = -7.431319E-2
+        t_opt1_dark[year2018e_index] = 55
+        a_dark_high[year2018e_index] = 8.377861E-1
+        b_dark_high[year2018e_index] = -7.431319E-2
+        a_max_low[year2018e_index] = 3.352173E-1
+        b_max_low[year2018e_index] = 1.957930E-2
+        t_opt1_max[year2018e_index] = 55
+        a_max_high[year2018e_index] = 3.352173E-1
+        b_max_high[year2018e_index] = 1.957930E-2
+    
+    if (len(year2018f_index)>0):
+        a_dark_low[year2018f_index] = 1.404219E+0
+        b_dark_low[year2018f_index] = -8.371131E-2
+        t_opt1_dark[year2018f_index] = 29.2992847
+        a_dark_high[year2018f_index] = 0.008836952
+        b_dark_high[year2018f_index] = 0.08927223
+        a_max_low[year2018f_index] = 3.352173E-1
+        b_max_low[year2018f_index] = 1.957930E-2
+        t_opt1_max[year2018f_index] = 55
+        a_max_high[year2018f_index] = 3.352173E-1
+        b_max_high[year2018f_index] = 1.957930E-2
+    
+    if (len(year2018g_index)>0):
+        a_dark_low[year2018g_index] = 1.297799E+0
+        b_dark_low[year2018g_index] = -8.157371E-2
+        t_opt1_dark[year2018g_index] = 29.08
+        a_dark_high[year2018g_index] = 1.734252E-2
+        b_dark_high[year2018g_index] = 6.681913E-2
+        a_max_low[year2018g_index] = 9.871702E-2
+        b_max_low[year2018g_index] = 7.869554E-2
+        t_opt1_max[year2018g_index] = 31.856
+        a_max_high[year2018g_index] = 3.914349E+0
+        b_max_high[year2018g_index] = -3.683004E-2
+    
+    if (len(year2018h_index)>0):
+        double_peak0[year2018h_index] = 1
+        a_dark_low[year2018h_index] = 9.794816E-2
+        b_dark_low[year2018h_index] = 5.765347E-2
+        t_opt1_dark[year2018h_index] = 28.38
+        a_dark_mid1[year2018h_index] = 5.365722E+0
+        b_dark_mid1[year2018h_index] = -8.341014E-2
+        t_min_dark[year2018h_index] = 38.525
+        a_dark_mid2[year2018h_index] = 6.592158E-4
+        b_dark_mid2[year2018h_index] = 1.503260E-1
+        t_opt2_dark[year2018h_index] = 43.32
+        a_dark_high[year2018h_index] = 2.271178E+1
+        b_dark_high[year2018h_index] = -9.084629E-2
+        a_max_low[year2018h_index] = 1.067653E-2
+        b_max_low[year2018h_index] = 1.369571E-1
+        t_opt1_max[year2018h_index] = 38.32
+        a_max_high[year2018h_index] = 2.010513E+2
+        b_max_high[year2018h_index] = -1.199038E-1
+    
+    double_peak0_index = numpy.where(double_peak0 == 1)[0]
+    single_peak0_index = numpy.where(double_peak0 == 0)[0]
+    ER_dark_Ts_low_index = numpy.where((Ts < t_opt1_dark) & (Fsd > 1))[0]
     ER_dark_flag[ER_dark_Ts_low_index] = numpy.int32(100)
-    ER_dark_flag[ER_dark_Ts_high_index] = numpy.int32(100)
     ER_dark[ER_dark_Ts_low_index] = a_dark_low[ER_dark_Ts_low_index] * numpy.exp(b_dark_low[ER_dark_Ts_low_index] * Ts[ER_dark_Ts_low_index])
-    ER_dark[ER_dark_Ts_high_index] = a_dark_high[ER_dark_Ts_high_index] * numpy.exp(b_dark_high[ER_dark_Ts_high_index] * Ts[ER_dark_Ts_high_index])
+    
+    if (len(double_peak0_index>0)):
+        ER_dark_Ts_mid1_index = numpy.where((double_peak0 == 1) & ((Ts < t_min_dark) & (Ts > t_opt1_dark)) & (Fsd > 1))[0]
+        ER_dark_Ts_mid2_index = numpy.where((double_peak0 == 1) & ((Ts < t_opt2_dark) & (Ts > t_min_dark)) & (Fsd > 1))[0]
+        ER_dark_Ts_high_index = numpy.where((double_peak0 == 1) & (Ts > t_opt2_dark) & (Fsd > 1))[0]
+        ER_dark_flag[ER_dark_Ts_mid1_index] = numpy.int32(100)
+        ER_dark_flag[ER_dark_Ts_mid2_index] = numpy.int32(100)
+        ER_dark_flag[ER_dark_Ts_high_index] = numpy.int32(100)
+        ER_dark[ER_dark_Ts_mid1_index] = a_dark_mid1[ER_dark_Ts_mid1_index] * numpy.exp(b_dark_mid1[ER_dark_Ts_mid1_index] * Ts[ER_dark_Ts_mid1_index])
+        ER_dark[ER_dark_Ts_mid2_index] = a_dark_mid2[ER_dark_Ts_mid2_index] * numpy.exp(b_dark_mid2[ER_dark_Ts_mid2_index] * Ts[ER_dark_Ts_mid2_index])
+        ER_dark[ER_dark_Ts_high_index] = a_dark_high[ER_dark_Ts_high_index] * numpy.exp(b_dark_high[ER_dark_Ts_high_index] * Ts[ER_dark_Ts_high_index])
+        if (len(single_peak0_index>0)):
+            ER_dark_Ts_high_index = numpy.where((double_peak0 == 0) & (Ts > t_opt1_dark) & (Fsd > 1))[0]
+            ER_dark_flag[ER_dark_Ts_high_index] = numpy.int32(100)
+            ER_dark[ER_dark_Ts_high_index] = a_dark_high[ER_dark_Ts_high_index] * numpy.exp(b_dark_high[ER_dark_Ts_high_index] * Ts[ER_dark_Ts_high_index])
+    else:
+        ER_dark_Ts_high_index = numpy.where((Ts > t_opt1_dark) & (Fsd > 1))[0]
+        ER_dark_flag[ER_dark_Ts_high_index] = numpy.int32(100)
+        ER_dark[ER_dark_Ts_high_index] = a_dark_high[ER_dark_Ts_high_index] * numpy.exp(b_dark_high[ER_dark_Ts_high_index] * Ts[ER_dark_Ts_high_index])
     
     double_peak_index = numpy.where(double_peak == 1)[0]
     single_peak_index = numpy.where(double_peak == 0)[0]
@@ -745,12 +889,12 @@ def DayCEGPP_ASM(cf,ds,Fc_in):
     if (len(double_peak_index>0)):
         CE_NEEmax_Ts_mid1_index = numpy.where((double_peak == 1) & ((Ts < t_min_max) & (Ts > t_opt1_max)) & (Fsd > 500))[0]
         CE_NEEmax_Ts_mid2_index = numpy.where((double_peak == 1) & ((Ts < t_opt2_max) & (Ts > t_min_max)) & (Fsd > 500))[0]
+        CE_NEEmax_Ts_high_index = numpy.where((double_peak == 1) & (Ts > t_opt2_max) & (Fsd > 500))[0]
         CE_NEEmax_flag[CE_NEEmax_Ts_mid1_index] = numpy.int32(100)
         CE_NEEmax_flag[CE_NEEmax_Ts_mid2_index] = numpy.int32(100)
+        CE_NEEmax_flag[CE_NEEmax_Ts_high_index] = numpy.int32(100)
         CE_NEEmax[CE_NEEmax_Ts_mid1_index] = a_max_mid1[CE_NEEmax_Ts_mid1_index] * numpy.exp(b_max_mid1[CE_NEEmax_Ts_mid1_index] * Ts[CE_NEEmax_Ts_mid1_index])
         CE_NEEmax[CE_NEEmax_Ts_mid2_index] = a_max_mid2[CE_NEEmax_Ts_mid2_index] * numpy.exp(b_max_mid2[CE_NEEmax_Ts_mid2_index] * Ts[CE_NEEmax_Ts_mid2_index])
-        CE_NEEmax_Ts_high_index = numpy.where((double_peak == 1) & (Ts > t_opt2_max) & (Fsd > 500))[0]
-        CE_NEEmax_flag[CE_NEEmax_Ts_high_index] = numpy.int32(100)
         CE_NEEmax[CE_NEEmax_Ts_high_index] = a_max_high[CE_NEEmax_Ts_high_index] * numpy.exp(b_max_high[CE_NEEmax_Ts_high_index] * Ts[CE_NEEmax_Ts_high_index])
         if (len(single_peak_index>0)):
             CE_NEEmax_Ts_high_index = numpy.where((double_peak == 0) & (Ts > t_opt1_max) & (Fsd > 500))[0]

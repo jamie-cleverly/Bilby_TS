@@ -435,6 +435,16 @@ def l3qc(cf,ds2):
     # write the percentage of good data for groups
     qcutils.get_coverage_groups(ds3)
     
+    # compute water-use efficiency from flux-gradient similarity (appendix A, Scanlon & Sahu 2008)
+    if qcutils.cfkeycheck(cf,Base='Functions',ThisOne='wue') and cf['Functions']['wue'] == 'True':
+        try:
+            ds3.globalattributes['L3Functions'] = ds3.globalattributes['L3Functions']+', wue'
+        except:
+            ds3.globalattributes['L3Functions'] = 'wue'
+        
+        log.info(' Calculating water-use efficiency from flux-gradient similarity')
+        qcts.CalculateWUEfromSimilarity(cf,ds3)
+    
     # compute climatology for L3 data
     if qcutils.cfkeycheck(cf,Base='Functions',ThisOne='climatology') and cf['Functions']['climatology'] == 'True':
         try:
