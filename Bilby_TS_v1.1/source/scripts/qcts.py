@@ -778,6 +778,7 @@ def CalculateWUEfromSimilarity(cf,ds):
     Lv,f,a = qcutils.GetSeriesasMA(ds,'Lv')
     ustar,f,a = qcutils.GetSeriesasMA(ds,'ustar')
     zeta,f,a = qcutils.GetSeriesasMA(ds,'zeta')
+    cica,f,a = qcutils.GetSeriesasMA(ds,'ci_ca')
     index = numpy.ma.where(Fsd < 10)[0]
     if qcutils.cfkeycheck(cf,Base='Massman',ThisOne='zmd'):
         zmd = ast.literal_eval(cf['Massman']['zmd'])
@@ -798,7 +799,7 @@ def CalculateWUEfromSimilarity(cf,ds):
     psyv = 2*numpy.log((1+numpy.sqrt(1-(16*zeta)))/2)
     qs = q + ((Fe/Lv)/(0.41*ustar))*(numpy.log(zmd/z0v)-psyv)
     cs = Cc + (Fc/(0.41*ustar))*(numpy.log(zmd/z0v)-psyv)
-    ci = 0.33 * cs
+    ci = cica * cs
     qi = mf.absolutehumidity(Ta,esat)
     WUE = 0.7*(cs-ci)/(qs-qi)
     WUE[index] = numpy.float64(c.missing_value)
@@ -1203,12 +1204,12 @@ def ComputeDailySums(cf,ds,SumList,SubSumList,MinMaxList,MeanList,SoilList):
             qcutils.CreateSeries(ds,'Fc_g',Fc_gC,FList=['Fc_c'],Attr=attr)
             attr = qcutils.MakeAttributeDictionary(long_name='Cumulative 30-min Flux',units='gCO2/m2')
             qcutils.CreateSeries(ds,'Fco2_g',Fc_gCO2,FList=['Fc_co2'],Attr=attr)
-            COut = ['NEE_mmol','NEP_mmol','Fc_g','Fco2_g']
-            for listindex in range(0,4):
-                OutList.append(COut[listindex])
-                SumOutList.append(COut[listindex])
-                if ThisOne in SubSumList:
-                    SubOutList.append(COut[listindex])
+            #COut = ['NEE_mmol','NEP_mmol','Fc_g','Fco2_g']
+            COut = ['Fc_g']
+            OutList.append(COut[0])
+            SumOutList.append(COut[0])
+            if ThisOne in SubSumList:
+                SubOutList.append(COut[0])
             
             if 'AliceSpringsMulga' in ds.globalattributes['site_name']:
                 if qcutils.cfkeycheck(cf,Base='Sums',ThisOne='GPPin'):
@@ -1284,8 +1285,9 @@ def ComputeDailySums(cf,ds,SumList,SubSumList,MinMaxList,MeanList,SoilList):
                     qcutils.CreateSeries(ds,'NEE_day_gC',NEE_day_gC,Flag=NEE_day_flag,Attr=attr)
                     attr = qcutils.MakeAttributeDictionary(long_name='Cumulative 30-min NEE, daytime accumulation',units='gCO2/m2')
                     qcutils.CreateSeries(ds,'NEE_day_gCO2',NEE_day_gCO2,Flag=NEE_day_flag,Attr=attr)
-                    GPPOut = ['GPP_mmol','GPP_gC','GPP_gCO2','CE_mmol','CE_gC','CE_gCO2','ER_night_mmol','ER_night_gC','ER_night_gCO2','ER_dark_mmol','ER_dark_gC','ER_dark_gCO2','CE_day_mmol','CE_day_gC','CE_day_gCO2','CE_NEEmax_mmol','CE_NEEmax_gC','CE_NEEmax_gCO2','NEE_day_mmol','NEE_day_gC','NEE_day_gCO2']
-                    for listindex in range(0,21):
+                    #GPPOut = ['GPP_mmol','GPP_gC','GPP_gCO2','CE_mmol','CE_gC','CE_gCO2','ER_night_mmol','ER_night_gC','ER_night_gCO2','ER_dark_mmol','ER_dark_gC','ER_dark_gCO2','CE_day_mmol','CE_day_gC','CE_day_gCO2','CE_NEEmax_mmol','CE_NEEmax_gC','CE_NEEmax_gCO2','NEE_day_mmol','NEE_day_gC','NEE_day_gCO2']
+                    GPPOut = ['GPP_gC','CE_gC','ER_night_gC','ER_dark_gC','CE_day_gC','CE_NEEmax_gC','NEE_day_gC']
+                    for listindex in range(0,6):
                         OutList.append(GPPOut[listindex])
                         SumOutList.append(GPPOut[listindex])
             elif 'TiTreeEast' in ds.globalattributes['site_name']:
@@ -1372,8 +1374,9 @@ def ComputeDailySums(cf,ds,SumList,SubSumList,MinMaxList,MeanList,SoilList):
                     qcutils.CreateSeries(ds,'NEE_day_gC',NEE_day_gC,Flag=NEE_day_flag,Attr=attr)
                     attr = qcutils.MakeAttributeDictionary(long_name='Cumulative 30-min NEE, daytime accumulation',units='gCO2/m2')
                     qcutils.CreateSeries(ds,'NEE_day_gCO2',NEE_day_gCO2,Flag=NEE_day_flag,Attr=attr)
-                    GPPOut = ['GPP_mmol','GPP_gC','GPP_gCO2','CE_mmol','CE_gC','CE_gCO2','ER_night_mmol','ER_night_gC','ER_night_gCO2','ER_dark_mmol','ER_dark_gC','ER_dark_gCO2','ER_bio_mmol','ER_bio_gC','ER_bio_gCO2','CE_day_mmol','CE_day_gC','CE_day_gCO2','PD_mmol','PD_gC','PD_gCO2','NEE_day_mmol','NEE_day_gC','NEE_day_gCO2']
-                    for listindex in range(0,24):
+                    #GPPOut = ['GPP_mmol','GPP_gC','GPP_gCO2','CE_mmol','CE_gC','CE_gCO2','ER_night_mmol','ER_night_gC','ER_night_gCO2','ER_dark_mmol','ER_dark_gC','ER_dark_gCO2','ER_bio_mmol','ER_bio_gC','ER_bio_gCO2','CE_day_mmol','CE_day_gC','CE_day_gCO2','PD_mmol','PD_gC','PD_gCO2','NEE_day_mmol','NEE_day_gC','NEE_day_gCO2']
+                    GPPOut = ['GPP_gC','CE_gC','ER_night_gC','ER_dark_gC','ER_bio_gC','CE_day_gC','PD_gC','NEE_day_gC']
+                    for listindex in range(0,7):
                         OutList.append(GPPOut[listindex])
                         SumOutList.append(GPPOut[listindex])
         elif ThisOne == 'PM':
@@ -4703,6 +4706,8 @@ def write_sums(cf,ds,ThisOne,xlCol,xlSheet,DoSum='False',DoMinMax='False',DoMean
     
     xlRow = 1
     if xlCol == 0:
+        xlSheet.write(xlRow,xlCol,'Year')
+        xlCol = xlCol + 1
         xlSheet.write(xlRow,xlCol,'Month')
         xlCol = xlCol + 1
         xlSheet.write(xlRow,xlCol,'Day')
@@ -4738,103 +4743,108 @@ def write_sums(cf,ds,ThisOne,xlCol,xlSheet,DoSum='False',DoMinMax='False',DoMean
         xlSheet.write(xlRow-1,xlCol,Units)
     
     data,f,a = qcutils.GetSeriesasMA(ds,ThisOne)
+    year,ff,aa = qcutils.GetSeriesasMA(ds,'Year')
     #data0,f,a = qcutils.GetSeriesasMA(ds,ThisOne)
     #data = numpy.zeros(len(data0), dtype=numpy.float64) + data0
     #data = numpy.ma.masked_where(abs(ds.series[ThisOne]['Data']-numpy.float64(c.missing_value))<c.eps,ds.series[ThisOne]['Data'])
     #data.dtype = numpy.float64
-    for month in range(M1st,M2nd+1):
-        if month == 1 or month == 3 or month == 5 or month == 7 or month == 8 or month == 10 or month == 12:
-            dRan = 31
-        if month == 2:
-            if ds.series['Year']['Data'][0] % 4 == 0:
-                dRan = 29
-            else:
-                dRan = 28
-        if month == 4 or month == 6 or month == 9 or month == 11:
-            dRan = 30
-            
-        for day in range(1,dRan+1):
-            xlRow = xlRow + 1
-            PMList = ['GSv_1layer_mol', 'GSv_2layer_mol', 'GSv_top_mol', 'GSv_base_mol', 'GSv_full_mol', 'GSm_mol', 'rav_1layer', 'rSv_1layer', 'rLv_1layer', 'GSv_1layer', 'rav_2layer', 'rSv_2layer', 'rLv_2layer', 'GSv_2layer', 'rav_base', 'rSv_base', 'GSv_base', 'rav_top', 'rSv_top', 'GSv_top', 'rav_full', 'rSv_full', 'GSv_full', 'ram', 'rSm', 'rLm', 'GSm']
-            CList = ['CE_mmol','ER_dark_mmol','ER_night_mmol','CE_NEEmax_mmol','GPP','GPP_mmol','C_ppm']
-            VarList = PMList + CList
-            if ThisOne in VarList:
-                di = numpy.where((ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day) & (numpy.mod(ds.series[ThisOne]['Flag'],10) == 0))[0]
-                ti = numpy.where((ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day))[0]
-                nRecs = len(ti)
-                check = numpy.ma.empty(nRecs,str)
-                for i in range(nRecs):
-                    index = ti[i]
-                    check[i] = ds.series['Day']['Data'][index]
-                if len(check) < 48:
-                    di = []
-            else:
-                di = numpy.where((ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day))[0]
-                nRecs = len(di)
-                check = numpy.ma.empty(nRecs,str)
-                for i in range(nRecs):
-                    index = di[i]
-                    check[i] = ds.series['Day']['Data'][index]
-                if len(check) < 47:
-                    di = []
-            
-            if DoSoil == 'True':
-                Num,Av = get_soilaverages(data[di])
-                if xlCol == 3:
-                    xlCol = 2
-                    xlSheet.write(xlRow,xlCol-2,monthabr[month-1])
-                    xlSheet.write(xlRow,xlCol-1,day)
+    for AnotherOne in range(year[0],year[len(year)-1]+1):
+        yearindex = numpy.where(year==AnotherOne)[0]
+        for month in range(M1st,M2nd+1):
+            if month == 1 or month == 3 or month == 5 or month == 7 or month == 8 or month == 10 or month == 12:
+                dRan = 31
+            if month == 2:
+                if ds.series['Year']['Data'][0] % 4 == 0:
+                    dRan = 29
                 else:
-                    xlCol = xlCol - 1
-            else:
-                if DoSum == 'True':
-                    Num,Sum = get_sums(data[di])
-                if DoMinMax == 'True':
-                    if ThisOne == 'WUE':
-                        Num,Min,Max = get_minmax_WUE(data[di])
+                    dRan = 28
+            if month == 4 or month == 6 or month == 9 or month == 11:
+                dRan = 30
+                
+            for day in range(1,dRan+1):
+                xlRow = xlRow + 1
+                PMList = ['GSv_1layer_mol', 'GSv_2layer_mol', 'GSv_top_mol', 'GSv_base_mol', 'GSv_full_mol', 'GSm_mol', 'rav_1layer', 'rSv_1layer', 'rLv_1layer', 'GSv_1layer', 'rav_2layer', 'rSv_2layer', 'rLv_2layer', 'GSv_2layer', 'rav_base', 'rSv_base', 'GSv_base', 'rav_top', 'rSv_top', 'GSv_top', 'rav_full', 'rSv_full', 'GSv_full', 'ram', 'rSm', 'rLm', 'GSm']
+                CList = ['CE_mmol','ER_dark_mmol','ER_night_mmol','CE_NEEmax_mmol','GPP','GPP_mmol','C_ppm']
+                VarList = PMList + CList
+                if ThisOne in VarList:
+                    di = numpy.where((year==AnotherOne) & (ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day) & (numpy.mod(ds.series[ThisOne]['Flag'],10) == 0))[0]
+                    ti = numpy.where((year==AnotherOne) & (ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day))[0]
+                    nRecs = len(ti)
+                    check = numpy.ma.empty(nRecs,str)
+                    for i in range(nRecs):
+                        index = ti[i]
+                        check[i] = ds.series['Day']['Data'][index]
+                    if len(check) < 48:
+                        di = []
+                else:
+                    di = numpy.where((year==AnotherOne) & (ds.series['Month']['Data']==month) & (ds.series['Day']['Data']==day))[0]
+                    nRecs = len(di)
+                    check = numpy.ma.empty(nRecs,str)
+                    for i in range(nRecs):
+                        index = di[i]
+                        check[i] = ds.series['Day']['Data'][index]
+                    if len(check) < 47:
+                        di = []
+                
+                if DoSoil == 'True':
+                    Num,Av = get_soilaverages(data[di])
+                    if xlCol == 4:
+                        xlCol = 3
+                        xlSheet.write(xlRow,xlCol-3,AnotherOne)
+                        xlSheet.write(xlRow,xlCol-2,monthabr[month-1])
+                        xlSheet.write(xlRow,xlCol-1,day)
                     else:
-                        Num,Min,Max = get_minmax(data[di])
-                if DoMean == 'True':
+                        xlCol = xlCol - 1
+                else:
+                    if DoSum == 'True':
+                        Num,Sum = get_sums(data[di])
                     if DoMinMax == 'True':
                         if ThisOne == 'WUE':
-                            Num2,Av = get_averages_WUE(data[di])
+                            Num,Min,Max = get_minmax_WUE(data[di])
                         else:
-                            Num2,Av = get_averages(data[di])
-                    else:
-                        if ThisOne == 'WUE':
-                            Num,Av = get_averages_WUE(data[di])
+                            Num,Min,Max = get_minmax(data[di])
+                    if DoMean == 'True':
+                        if DoMinMax == 'True':
+                            if ThisOne == 'WUE':
+                                Num2,Av = get_averages_WUE(data[di])
+                            else:
+                                Num2,Av = get_averages(data[di])
                         else:
-                            Num,Av = get_averages(data[di])
-                if DoSubSum == 'True':
-                    PosNum,NegNum,SumPos,SumNeg = get_subsums(data[di])
-                xlCol = 2
-                xlSheet.write(xlRow,xlCol-2,monthabr[month-1])
-                xlSheet.write(xlRow,xlCol-1,day)
-            
-            xlSheet.write(xlRow,xlCol,Num)
-            xlCol = xlCol + 1
-            if DoSoil == 'True':
-                xlSheet.write(xlRow,xlCol,Av)
-            elif DoMinMax == 'True':
-                xlSheet.write(xlRow,xlCol,Min)
+                            if ThisOne == 'WUE':
+                                Num,Av = get_averages_WUE(data[di])
+                            else:
+                                Num,Av = get_averages(data[di])
+                    if DoSubSum == 'True':
+                        PosNum,NegNum,SumPos,SumNeg = get_subsums(data[di])
+                    xlCol = 3
+                    xlSheet.write(xlRow,xlCol-3,AnotherOne)
+                    xlSheet.write(xlRow,xlCol-2,monthabr[month-1])
+                    xlSheet.write(xlRow,xlCol-1,day)
+                
+                xlSheet.write(xlRow,xlCol,Num)
                 xlCol = xlCol + 1
-                xlSheet.write(xlRow,xlCol,Max)
-                if DoMean == 'True':
-                    xlCol = xlCol + 1
+                if DoSoil == 'True':
                     xlSheet.write(xlRow,xlCol,Av)
-            elif DoMinMax == 'False' and DoMean == 'True':
-                xlSheet.write(xlRow,xlCol,Av)
-            elif DoSum == 'True':
-                xlSheet.write(xlRow,xlCol,Sum)
-                if DoSubSum == 'True':
+                elif DoMinMax == 'True':
+                    xlSheet.write(xlRow,xlCol,Min)
                     xlCol = xlCol + 1
-                    xlSheet.write(xlRow,xlCol,PosNum)
-                    xlCol = xlCol + 1
-                    xlSheet.write(xlRow,xlCol,SumPos)
-                    xlCol = xlCol + 1
-                    xlSheet.write(xlRow,xlCol,NegNum)
-                    xlCol = xlCol + 1
-                    xlSheet.write(xlRow,xlCol,SumNeg)
+                    xlSheet.write(xlRow,xlCol,Max)
+                    if DoMean == 'True':
+                        xlCol = xlCol + 1
+                        xlSheet.write(xlRow,xlCol,Av)
+                elif DoMinMax == 'False' and DoMean == 'True':
+                    xlSheet.write(xlRow,xlCol,Av)
+                elif DoSum == 'True':
+                    xlSheet.write(xlRow,xlCol,Sum)
+                    if DoSubSum == 'True':
+                        xlCol = xlCol + 1
+                        xlSheet.write(xlRow,xlCol,PosNum)
+                        xlCol = xlCol + 1
+                        xlSheet.write(xlRow,xlCol,SumPos)
+                        xlCol = xlCol + 1
+                        xlSheet.write(xlRow,xlCol,NegNum)
+                        xlCol = xlCol + 1
+                        xlSheet.write(xlRow,xlCol,SumNeg)
     
     if DoSoil == 'True': 
         return xlCol,xlSheet

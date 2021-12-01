@@ -1,5 +1,5 @@
 #    cfg.py  Version management and specification
-#    Copyright (C) 2016  Dr James Cleverly, Dr Peter Isaac
+#    Copyright (C) 2016  Dr Jamie Cleverly
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 
 """
     Version History:
+    <<1.1 6 June 2018, Update and new author name, Bilby TS Time Series Analyst>>
     <<1.0 6 June 2018, Update and new version name, Bilby TS Time Series Analyst>>
     
     Version History, OzFluxQC Simulator:
@@ -38,10 +39,12 @@
 """
 
 version_name = "Bilby_TS"
-version_number = "v1.0"
+version_number = "v1.1"
 
-# Tofu TS
+# Bilby TS
+# 1.1      - 1 December 2021, Update and new author name
 # 1.0      - 6 June 2018, Update and new version name
+
 
 # OzFluxQC Simulator
 # 2.9.5    - 20 December 2015, implementation of Chapin semantics for carbon fluxes (ammended)
